@@ -216,18 +216,20 @@ class DisplayFrame(tk.Frame):
 
 		## Handle digits (0-9)
 		elif input_value.isdigit():
-			pass
+			
+			if self.display.get() != config.DISPLAY_ERROR:
 
-			# if self.display.get() == self.display_initial_value:
-			# 	self.display.delete(0, 'end')
-				
-			# self.display.insert('end', input_value)
+				if self.display.get() == config.DISPLAY_INITIAL_VALUE:
+					self.display.configure(state='normal')
+					self.display.delete(0, 'end')
+					self.display.configure(state='readonly')
 
+				self.display.configure(state='normal')
+				self.display.insert('end', input_value)
+				self.display.configure(state='readonly')
 
 		## In case of odd occurence disable editing of the display
 		self.display.configure(state='readonly')
-
-
 
 
 if __name__ == "__main__":

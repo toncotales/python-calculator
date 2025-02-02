@@ -1,4 +1,5 @@
-# Calculator application configuration file.
+# Calculator application configuration file (config.py)
+# Created by: Anthony Cotales <ton.cotales@gmail.com>
 
 WINDOW_HEIGHT = 350
 WINDOW_WIDTH = 300
