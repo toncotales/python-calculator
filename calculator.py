@@ -17,7 +17,7 @@ class Calculator(tk.Tk):
 	def __init__(self):
 		super().__init__()
 
-		# Set window title, minimum and maximum size, and icon
+		# Set window title, minimum, maximum size, and icon
 		self.title(config.WINDOW_TITLE)
 		self.geometry(f'{config.WINDOW_WIDTH}x{config.WINDOW_HEIGHT}')
 		self.minsize(config.WINDOW_WIDTH, config.WINDOW_HEIGHT)
@@ -75,9 +75,9 @@ class DisplayFrame(tk.Frame):
 			button.grid(row=row, column=column, rowspan=2, columnspan=columnspan, sticky='nsew')
 			button.configure(command=lambda key=text: self.process_input(key))
 
-	def validate_input(self, new_value):
+	def validate_input(self, display_value):
 		"""Validate input to ensure the length doesn't exceed 17 characters."""
-		return len(new_value) <= 17 
+		return len(display_value) <= 17 
 
 	def clear_display(self):
 		"""Clears the display and resets it to the initial value '0'."""
@@ -216,18 +216,20 @@ class DisplayFrame(tk.Frame):
 
 		## Handle digits (0-9)
 		elif input_value.isdigit():
-			pass
+			
+			if self.display.get() != config.DISPLAY_ERROR:
 
-			# if self.display.get() == self.display_initial_value:
-			# 	self.display.delete(0, 'end')
-				
-			# self.display.insert('end', input_value)
+				if self.display.get() == config.DISPLAY_INITIAL_VALUE:
+					self.display.configure(state='normal')
+					self.display.delete(0, 'end')
+					self.display.configure(state='readonly')
 
+				self.display.configure(state='normal')
+				self.display.insert('end', input_value)
+				self.display.configure(state='readonly')
 
 		## In case of odd occurence disable editing of the display
 		self.display.configure(state='readonly')
-
-
 
 
 if __name__ == "__main__":
