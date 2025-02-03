@@ -32,13 +32,13 @@ class Calculator(tk.Tk):
 		self.configure(bg=config.WINDOW_BACKGROUND_COLOR)
 
 		# Create a frame for the calculator widgets (e.g., buttons and display)
-		self.display_frame = DisplayFrame(self, relief='groove', bg=config.WINDOW_BACKGROUND_COLOR)
-		self.display_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
+		self.widget_frame = WidgetFrame(self, relief='groove', bg=config.WINDOW_BACKGROUND_COLOR)
+		self.widget_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
 
 		# Bind the keypress event to the window
-		self.bind('<KeyPress>', lambda event: self.display_frame.process_input(event.char))
+		self.bind('<KeyPress>', lambda event: self.widget_frame.process_input(event.char))
 
-class DisplayFrame(tk.Frame):
+class WidgetFrame(tk.Frame):
 	"""
 	A frame that contains the display area for the calculator's input and result.
 
