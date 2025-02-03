@@ -62,11 +62,11 @@ class TestCalculator(unittest.TestCase):
         """Test that the percentage function works as expected."""
         pass
 
-    def test_operator_input(self, mock_process_input):
+    def test_operator_input(self):
         """Test that operator buttons work properly."""
         pass
 
-     def test_equal_input(self, mock_process_input):
+    def test_equal_input(self):
         """Test that '=' button works properly."""  
         pass
 
