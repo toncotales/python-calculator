@@ -40,7 +40,7 @@ class Calculator(tk.Tk):
 
 class WidgetFrame(tk.Frame):
 	"""
-	A frame that contains the display area for the calculator's input and result.
+	A frame that contains the calculator's buttons and display.
 
 	Created by: Anthony Cotales
 	Email: ton.cotales@gmail.com
