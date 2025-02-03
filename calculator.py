@@ -96,15 +96,15 @@ class DisplayFrame(tk.Frame):
 			expression = expression.translate(str.maketrans(config.OPERATOR_MAP))
 			expression_result = eval(expression)
 
+			# If the result is None (invalid expression), set it to 'Error'
+			if isinstance(expression_result, type(None)):
+				raise Exception
+
 		except (SyntaxError, ZeroDivisionError, Exception):
 			# If an error occurs (e.g., invalid syntax), return a generic error message
 			return config.DISPLAY_ERROR
 
 		else:
-			# If the result is None (invalid expression), set it to 'Error'
-			if isinstance(expression_result, type(None)):
-				expression_result = config.DISPLAY_ERROR
-
 			# Round the result to 15 decimal places for precision
 			result = round(expression_result, ndigits=15)
 
