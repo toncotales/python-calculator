@@ -1,5 +1,4 @@
-# Calculator application configuration file (config.py)
-# Created by: Anthony Cotales <ton.cotales@gmail.com>
+import re
 
 WINDOW_HEIGHT = 350
 WINDOW_WIDTH = 300
@@ -51,3 +50,12 @@ zLdqPafoYPveFW5HPHGjOeyfILhcY/fCNxd95yhWH1+8+AWDbLmawD1pOAUveS7T8Jsc62+k+\
 dO3lNaqVG2HByNv1pdrO9x7NUjQqjCdCQFCbQOUXfeZRvsTyfWPYhoGk7O/Ns9TmY6NoTWGlM\
 //+f4CrqzDeV+thpcAAAAASUVORK5CYII=\
 """
+
+def get_base_expression(expression):
+	pattern = r'([+–×÷\-/*])'
+	return re.split(pattern, expression)
+
+
+def evaluate_expression(expression):
+	print(f'Expression: {expression}')
+	return expression
