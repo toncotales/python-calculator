@@ -1,5 +1,6 @@
 import re
 
+
 WINDOW_HEIGHT = 350
 WINDOW_WIDTH = 300
 WINDOW_TITLE = "Calculator"
@@ -57,5 +58,29 @@ def get_base_expression(expression):
 
 
 def evaluate_expression(expression):
+	"""
+	Evaluates the given mathematical expression and returns the result or
+	return 'Error' if the operation is invalid.
+	"""
+	try:
+		expression = expression.translate(str.maketrans(OPERATOR_MAP))
+		base = get_base_expression(expression)
+		print(f'Base: {base}')
+		if len(base) > 2 and base[-1]:
+
+			print('Expression can be processed!')
+			result = eval(expression)
+			print(f'TEST RESULT: {result}')
+
+			# If the result is None (invalid expression), set it to 'Error'
+			if isinstance(result, type(None)):
+				raise Exception
+
+			# Round the result to 14 decimal places for precision
+			result = round(result, ndigits=14)
+
+	except (SyntaxError, ZeroDivisionError, Exception) as e:
+		raise
+
 	print(f'Expression: {expression}')
 	return expression
