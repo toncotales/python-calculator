@@ -27,7 +27,7 @@ class WidgetFrame(tk.Frame):
 	def __init__(self, master=None, **kwargs):
 		super().__init__(master, **kwargs)
 
-		# Top frame containing the display widget of the calculator.
+		# Top frame containing the display of the calculator.
 		top_container = tk.Frame(self)
 		top_container.place(relx=0.04, rely=0.05, relwidth=0.92, relheight=0.2)
 
@@ -142,21 +142,52 @@ class WidgetFrame(tk.Frame):
 		"""Handle decimal point function."""
 		if SCIENTIFIC_NOTATION not in self.display.get():
 			# Split the expression by operators to separate numbers and operators.
-			base_expression = get_base_expression(self.display.get())
+			expression = get_base_expression(self.display.get())
 
-			if base_expression[-1].isdigit():
+			if expression[-1].isdigit():
 				self.display.configure(state='normal')
 				self.display.insert('end', '.')
 				self.display.configure(state='readonly')
 
-			elif not base_expression[-1]:
+			elif not expression[-1]:
 				self.display.configure(state='normal')
 				self.display.insert('end', f'{DISPLAY_INITIAL_VALUE}.')
 				self.display.configure(state='readonly')
 
 	def display_percentage_handler(self):
 		"""Handle percentage insert operations to the display."""
-		pass
+		# Process only if display is not 'Error' or '0'
+		if self.display.get() not in [DISPLAY_ERROR, DISPLAY_INITIAL_VALUE]:
+			expression = get_base_expression(self.display.get())
+
+			# Case 1: Single number or scientific notation, divide by 100
+			if len(expression) == 1 or SCIENTIFIC_NOTATION not in self.display.get():
+				display_expression = evaluate_expression(f'{self.display.get()}/100')
+
+			# Case 2: Multiple parts, handle percentage based on operator
+			elif len(expression) > 1 and SCIENTIFIC_NOTATION not in self.display.get():
+				operator, percentage = expression[-2], expression[-1]
+				value_index = len(self.display.get()) - (len(percentage) + len(operator))
+				value = self.display.get()[0:value_index]
+
+				# If operator is * or /, divide percentage by 100
+				if operator in ['×', '÷', '*', '/']:
+					percentage = evaluate_expression(f'{percentage}/100')
+				# If operator is + or -, calculate percentage of the value
+				elif operator in ['+', '–', '-']:
+					percentage = evaluate_expression(f'{value}*({percentage}/100)')
+
+				# Rebuild the expression with the updated percentage
+				display_expression = ''.join(value + operator + percentage)
+		else:
+			# Leave the display unchanged
+			display_expression = self.display.get()
+
+		# Update display with the calculated percentage result
+		self.display.configure(state='normal')
+		self.display.delete(0, 'end')
+		self.display.insert(0, display_expression)
+		self.display.configure(state='readonly')
 
 	def display_equalsign(self):
 		"""Processes the display values as math expressions."""
@@ -165,9 +196,6 @@ class WidgetFrame(tk.Frame):
 		self.display.delete(0, 'end')
 		self.display.insert(0, result)
 		self.display.configure(state='readonly')
-
-
-
 
 
 if __name__ == '__main__':
