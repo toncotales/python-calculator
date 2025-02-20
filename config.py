@@ -62,25 +62,35 @@ def evaluate_expression(expression):
 	Evaluates the given mathematical expression and returns the result or
 	return 'Error' if the operation is invalid.
 	"""
-	try:
-		expression = expression.translate(str.maketrans(OPERATOR_MAP))
-		base = get_base_expression(expression)
-		print(f'Base: {base}')
-		if len(base) > 2 and base[-1]:
+	if expression not in [DISPLAY_ERROR, DISPLAY_INITIAL_VALUE]:
+		try:
+			expression = expression.translate(str.maketrans(OPERATOR_MAP))
+			base_expressions = get_base_expression(expression)
 
-			print('Expression can be processed!')
-			result = eval(expression)
-			print(f'TEST RESULT: {result}')
+			if len(base_expressions) > 2 and base_expressions[-1]:
 
-			# If the result is None (invalid expression), set it to 'Error'
-			if isinstance(result, type(None)):
-				raise Exception
+				result = eval(expression)
 
-			# Round the result to 14 decimal places for precision
-			result = round(result, ndigits=14)
+				# Find trailing nines and zeros in evaluation result
+				nines = re.findall(r'\b\d+\.\d*9{10,}\b', str(result))
+				zeros = re.findall(r'\b\d+\.\d*0{10,}\b', str(result))
+				if any(nines + zeros):
+					round_ndigits = 14
+				else:
+					round_ndigits = 15
+				# Round the result to 14 decimal places for precision
+				result = round(result, ndigits=round_ndigits)
 
-	except (SyntaxError, ZeroDivisionError, Exception) as e:
-		raise
+				if str(result).endswith('.0'):
+					result = int(result)
+			else:
+				print(f'testing: {expression}')
+				result = expression
+				print(f'testing: {result}')
 
-	print(f'Expression: {expression}')
-	return expression
+		except Exception as e:
+			print(f'Error: {e}')
+			result = DISPLAY_ERROR
+
+		# print(f'result: {result}')
+		return result
