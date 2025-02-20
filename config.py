@@ -6,37 +6,6 @@ WINDOW_WIDTH = 300
 WINDOW_TITLE = "Calculator"
 WINDOW_BACKGROUND_COLOR = "#5cbeff"
 
-SCIENTIFIC_NOTATION = "e"
-
-DISPLAY_INITIAL_VALUE = "0"
-DISPLAY_ERROR = "Error"
-DISPLAY_FONT = ("Default", 20, "normal")
-DISPLAY_FOREGROUND_COLOR = "#393e46"
-DISPLAY_OPERATORS = "+–×÷"
-
-PYTHON_OPERATORS = "+-*/"
-
-OPERATOR_MAP = dict(zip(DISPLAY_OPERATORS, PYTHON_OPERATORS))
-
-BUTTON_FONT = ("Verdana", 12, "normal")
-
-# Button configuration: (text label, row position, column position)
-BUTTONS = [
-			('C', 1, 0), ('←', 1, 1), ('%', 1, 2), ('÷', 1, 3),
-			('7', 3, 0), ('8', 3, 1), ('9', 3, 2), ('×', 3, 3),
-			('4', 5, 0), ('5', 5, 1), ('6', 5, 2), ('–', 5, 3),
-			('1', 7, 0), ('2', 7, 1), ('3', 7, 2), ('+', 7, 3),
-			('0', 9, 0), ('.', 9, 2), ('=', 9, 3)
-        ]
-
-BUTTONS2 = [
-			('C', 0, 0), ('←', 0, 1), ('%', 0, 2), ('÷', 0, 3),
-			('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('×', 1, 3),
-			('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('–', 2, 3),
-			('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('+', 3, 3),
-			('0', 4, 0), ('.', 4, 2), ('=', 4, 3)
-        ]
-
 WINDOW_ICON = """\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAB2AAAAdgFOey\
 YIAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAgtJREFUOI19kj1MU1\
@@ -52,9 +21,34 @@ dO3lNaqVG2HByNv1pdrO9x7NUjQqjCdCQFCbQOUXfeZRvsTyfWPYhoGk7O/Ns9TmY6NoTWGlM\
 //+f4CrqzDeV+thpcAAAAASUVORK5CYII=\
 """
 
-def get_base_expression(expression):
-	pattern = r'([+–×÷\-/*])'
-	return re.split(pattern, expression)
+DISPLAY_LENGTH_LIMIT = 17
+DISPLAY_FONT = ("Default", 20, "normal")
+DISPLAY_FOREGROUND_COLOR = "#393e46"
+
+BUTTON_FONT = ("Verdana", 12, "normal")
+# Button configuration: (text label, row position, column position)
+BUTTONS = [
+			('C', 0, 0), ('←', 0, 1), ('%', 0, 2), ('÷', 0, 3),
+			('7', 1, 0), ('8', 1, 1), ('9', 1, 2), ('×', 1, 3),
+			('4', 2, 0), ('5', 2, 1), ('6', 2, 2), ('–', 2, 3),
+			('1', 3, 0), ('2', 3, 1), ('3', 3, 2), ('+', 3, 3),
+			('0', 4, 0), ('.', 4, 2), ('=', 4, 3)
+        ]
+
+
+SCIENTIFIC_NOTATION = "e"
+INITIAL_VALUE = "0"
+ERROR = "Error"
+OPERATORS = "+–×÷-*/"
+OPERATOR_MAP = dict(zip("+–×÷", "+-*/"))
+
+
+def split_expression(expression):
+	return re.split(r'([+–×÷\-/*])', expression)
+
+def length_validator(value):
+	return len(value) <= DISPLAY_LENGTH_LIMIT
+
 
 
 def evaluate_expression(expression):
@@ -62,10 +56,11 @@ def evaluate_expression(expression):
 	Evaluates the given mathematical expression and returns the result or
 	return 'Error' if the operation is invalid.
 	"""
-	if expression not in [DISPLAY_ERROR, DISPLAY_INITIAL_VALUE]:
+	# TODO: Need to refactor the logic on this functionality
+	if expression not in [ERROR, INITIAL_VALUE]:
 		try:
 			expression = expression.translate(str.maketrans(OPERATOR_MAP))
-			base_expressions = get_base_expression(expression)
+			base_expressions = split_expression(expression)
 
 			if len(base_expressions) > 2 and base_expressions[-1]:
 
@@ -90,7 +85,7 @@ def evaluate_expression(expression):
 
 		except Exception as e:
 			print(f'Error: {e}')
-			result = DISPLAY_ERROR
+			result = ERROR
 
 		# print(f'result: {result}')
 		return result
