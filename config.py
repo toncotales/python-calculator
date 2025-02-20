@@ -49,43 +49,45 @@ def split_expression(expression):
 def length_validator(value):
 	return len(value) <= DISPLAY_LENGTH_LIMIT
 
-
-
 def evaluate_expression(expression):
 	"""
 	Evaluates the given mathematical expression and returns the result or
 	return 'Error' if the operation is invalid.
 	"""
-	# TODO: Need to refactor the logic on this functionality
-	if expression not in [ERROR, INITIAL_VALUE]:
-		try:
-			expression = expression.translate(str.maketrans(OPERATOR_MAP))
-			base_expressions = split_expression(expression)
+	result = expression
+	try:
+		expressions = split_expression(expression.translate(str.maketrans(OPERATOR_MAP)))
 
-			if len(base_expressions) > 2 and base_expressions[-1]:
+		if expression not in [ERROR, INITIAL_VALUE]:
+			if len(expressions) > 2 and expressions[-1]:
+				if not str(expressions[-1]).endswith('.'):
 
-				result = eval(expression)
+					print(f'[OK] -> {''.join(expressions)}')
 
-				# Find trailing nines and zeros in evaluation result
-				nines = re.findall(r'\b\d+\.\d*9{10,}\b', str(result))
-				zeros = re.findall(r'\b\d+\.\d*0{10,}\b', str(result))
-				if any(nines + zeros):
-					round_ndigits = 14
-				else:
+					result = eval(''.join(expressions))
+					print(f'Evaluation #1: {result}')
+
+					# Combined regular expression patterns for finding numbers
+					# with 10 or more trailing 9s or 0s
+					combined_pattern = r'\b\d+\.\d*(9{10,}|0{10,})\b'
 					round_ndigits = 15
-				# Round the result to 14 decimal places for precision
-				result = round(result, ndigits=round_ndigits)
 
-				if str(result).endswith('.0'):
-					result = int(result)
-			else:
-				print(f'testing: {expression}')
-				result = expression
-				print(f'testing: {result}')
+					if any(re.findall(combined_pattern, str(result))):
+						round_ndigits = 14
 
-		except Exception as e:
-			print(f'Error: {e}')
-			result = ERROR
+					result = round(result, ndigits=round_ndigits)
+					print(f'Evaluation #2: {result}')
 
-		# print(f'result: {result}')
-		return result
+					if len(str(result)) > DISPLAY_LENGTH_LIMIT:
+						result = round(result, ndigits=4)
+
+					if str(result).endswith('.0'):
+						result = int(result)
+
+					print(f'Evaluation #3: {result}')
+
+	except Exception as e:
+		print(f'Evaluation Error: {e}')
+		result = ERROR
+
+	return result
