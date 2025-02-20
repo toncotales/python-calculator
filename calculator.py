@@ -61,25 +61,25 @@ class WidgetFrame(tk.Frame):
 		"""
 		Processes the input from both button clicks and keyborad presses.
 		"""
-		if key in ['C', '\x1b']:  # When 'C' or ESC key is pressed
+		if key in ['C', '\x1b']:  # When key press 'C' or ESC
 			self.clear_display()
 
-		if key in ['←', '\x08']:  # When '←' or backspace key is pressed
+		if key in ['←', '\x08']:  # When key press '←' or backspace
 			self.delete_handler()
 
-		if key == '%':  # When '%' is pressed
+		if key == '%':  # When key press '%'
 			self.percentage_handler()
 
 		if key in OPERATORS:  # When math operators
 			self.insert_operator(key)
 
-		if key == '.':  # When '.' or decimal point is pressed
+		if key == '.':  # When key press '.'
 			self.insert_decimal()
 
-		if key.isdigit():  # When a number is pressed
+		if key.isdigit():  # When key press is a digit
 			self.insert_number(key)
 	    
-		if key in ['=', '\r']:  # When '=' is pressed
+		if key in ['=', '\r']:  # When key press '='
 			self.equalsign_handler()
 
 		# In case of odd occurance, disable editing of the display
@@ -158,7 +158,24 @@ class WidgetFrame(tk.Frame):
 
 	def percentage_handler(self):
 		# TODO: Need to refactor the logic on this functionality
-		pass
+		if self.display.get() not in [ERROR, INITIAL_VALUE]:
+			if SCIENTIFIC_NOTATION not in self.display.get():
+				expressions = split_expression(self.display.get())
+				print(f'Values: {expressions}')
+
+				if len(expressions) == 1:
+					if expressions[0].isdigit() or not expressions[0].endswith('.'):
+						print(f'[OK] -> {expressions[0]}/100')
+						test_result = evaluate_expression(f'{expressions[0]}/100')
+
+						self.display.configure(state='normal')
+						self.display.delete(0, 'end')
+						self.display.insert(0, test_result)
+						self.display.configure(state='readonly')
+			else:
+				print('Ooops... scientific notation found!')
+				print(f'{self.display.get()}')
+		
 		# """Handle percentage insert operations to the display."""
 		# # Process only if display is not 'Error' or '0'
 		# if self.display.get() not in [ERROR, INITIAL_VALUE]:
