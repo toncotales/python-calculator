@@ -5,7 +5,6 @@ WINDOW_HEIGHT = 350
 WINDOW_WIDTH = 300
 WINDOW_TITLE = "Calculator"
 WINDOW_BACKGROUND_COLOR = "#5cbeff"
-
 WINDOW_ICON = """\
 iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAB2AAAAdgFOey\
 YIAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAgtJREFUOI19kj1MU1\
@@ -35,19 +34,17 @@ BUTTONS = [
 			('0', 4, 0), ('.', 4, 2), ('=', 4, 3)
         ]
 
-
 SCIENTIFIC_NOTATION = "e"
 INITIAL_VALUE = "0"
 ERROR = "Error"
 OPERATORS = "+–×÷-*/"
 OPERATOR_MAP = dict(zip("+–×÷", "+-*/"))
 
-
 def split_expression_with_exponents(expression):
     groups = []
     group = ''
     for i in expression:
-        if i in '+-*/':
+        if i in OPERATORS:
             if group:
                 if group[-1].casefold() in 'eE':
                     group += i
@@ -82,10 +79,10 @@ def evaluate_expression(expression):
 			if len(expressions) > 2 and expressions[-1]:
 				if not str(expressions[-1]).endswith('.'):
 
-					print(f'[OK] -> {''.join(expressions)}')
+					# print(f'[OK] -> {''.join(expressions)}')
 
 					result = eval(''.join(expressions))
-					print(f'Evaluation #1: {result}')
+					# print(f'Evaluation #1: {result}')
 
 					# Combined regular expression patterns for finding numbers
 					# with 10 or more trailing 9s or 0s
@@ -96,7 +93,7 @@ def evaluate_expression(expression):
 						round_ndigits = 14
 
 					result = round(result, ndigits=round_ndigits)
-					print(f'Evaluation #2: {result}')
+					# print(f'Evaluation #2: {result}')
 
 					if len(str(result)) > DISPLAY_LENGTH_LIMIT:
 						result = round(result, ndigits=4)
@@ -104,10 +101,10 @@ def evaluate_expression(expression):
 					if str(result).endswith('.0'):
 						result = int(result)
 
-					print(f'Evaluation #3: {result}')
+					# print(f'Evaluation #3: {result}')
 
 	except Exception as e:
-		print(f'Evaluation Error: {e}')
+		# print(f'Evaluation Error: {e}')
 		result = ERROR
 
 	return result

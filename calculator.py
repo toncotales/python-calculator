@@ -4,7 +4,7 @@ from tkinter import PhotoImage
 from config import *
 
 
-class CalculatorApp(tk.Tk):
+class Calculator(tk.Tk):
 	def __init__(self):
 		super().__init__()
 
@@ -145,125 +145,76 @@ class WidgetFrame(tk.Frame):
 		if SCIENTIFIC_NOTATION not in self.display.get():
 			# Split the numbers and operators.
 			expressions = split_expression(self.display.get())
+		else:
+			expressions = split_expression_with_exponents(self.display.get())
 
-			if expressions[-1].isdigit():
-				self.display.configure(state='normal')
-				self.display.insert('end', '.')
-				self.display.configure(state='readonly')
+		# print(expressions)
 
-			if not expressions[-1]:
-				self.display.configure(state='normal')
-				self.display.insert('end', '0.')
-				self.display.configure(state='readonly')
+		if expressions[-1].isdigit():
+			self.display.configure(state='normal')
+			self.display.insert('end', '.')
+			self.display.configure(state='readonly')
+
+		if not expressions[-1] or expressions[-1] in OPERATORS:
+			self.display.configure(state='normal')
+			self.display.insert('end', '0.')
+			self.display.configure(state='readonly')
+
 
 	def percentage_handler(self):
-		# TODO: Need to refactor the logic on this functionality
+		# Handle the percentage functionality
 		if self.display.get() not in [ERROR, INITIAL_VALUE]:
 			if SCIENTIFIC_NOTATION not in self.display.get():
 				expressions = split_expression(self.display.get())
-				# print(f'Values: {expressions}')
-
-				if len(expressions) == 1:
-					if expressions[0].isdigit() or not expressions[0].endswith('.'):
-						print(f'[OK] -> {expressions[0]}/100')
-						test_result = evaluate_expression(f'{expressions[0]}/100')
-
-						self.display.configure(state='normal')
-						self.display.delete(0, 'end')
-						self.display.insert(0, test_result)
-						self.display.configure(state='readonly')
-
-				else:
-					print('Multiple items on the expression')
-					if expressions[-1]:
-						if expressions[-1].isdigit() or not expressions[-1].endswith('.'):
-							print(f'[OK] -> {expressions}')
-							base = expressions[:-1]
-							operation_identifier = expressions[-2]
-							percentage_value = expressions[-1]
-
-							if operation_identifier in ['×', '÷', '*', '/']:
-								base_result = evaluate_expression(''.join(expressions[:-2]))
-								percentage_value = evaluate_expression(f'{percentage_value}/100')
-								base = [str(base_result), operation_identifier]
-
-
-							if operation_identifier in ['+', '–', '-']:
-								base_result = evaluate_expression(''.join(expressions[:-2]))
-								print(f'base result: {base_result}')
-								percentage = evaluate_expression(f'{percentage_value}/100')
-								print(f'percentage: {percentage}')
-								percentage_value = evaluate_expression(f'{base_result}*{percentage}')
-
-
-							new_display = ''.join(base) + str(percentage_value)
-							print(f'[DISPLAY] -> {new_display}')
-
-							self.display.configure(state='normal')
-							self.display.delete(0, 'end')
-							self.display.insert(0, new_display)
-							self.display.configure(state='readonly')
-					
-
-
-
 			else:
-				print('Ooops... scientific notation found!')
-				print(f'{self.display.get()}')
 				expressions = split_expression_with_exponents(self.display.get())
-				print(expressions)
+			
+			if not expressions[0]:
+				negative = ''.join(expressions[:3])
+				values = [i for i in expressions[4:]]
+				expressions = [negative] + values
+			
+			# print(f'Expressions: {expressions}')
 
-				if len(expressions) == 1:
+			if len(expressions) == 1:
+				if expressions[0].isdigit() or not expressions[0].endswith('.'):
+					# print(f'[OK] -> {expressions[0]}/100')
 					test_result = evaluate_expression(f'{expressions[0]}/100')
 
 					self.display.configure(state='normal')
 					self.display.delete(0, 'end')
 					self.display.insert(0, test_result)
 					self.display.configure(state='readonly')
-		
-		# """Handle percentage insert operations to the display."""
-		# # Process only if display is not 'Error' or '0'
-		# if self.display.get() not in [ERROR, INITIAL_VALUE]:
-		# 	expressions = split_expression(self.display.get())
-		# 	print(expressions)
 
-		# 	# Case 1: Single number or scientific notation, divide by 100
-		# 	if len(expressions) == 1 or SCIENTIFIC_NOTATION in self.display.get():
-		# 		display_expression = evaluate_expression(f'{self.display.get()}/100')
+			else:
+				if expressions[-1]:
+					if expressions[-1].isdigit() or not expressions[-1].endswith('.'):
+						# print(f'[OK] -> {expressions}')
+						base = expressions[:-1]
+						operation_identifier = expressions[-2]
+						percentage_value = expressions[-1]
 
-		# 	# Case 2: Multiple parts, handle percentage based on operator
-		# 	elif len(expressions) > 1 and SCIENTIFIC_NOTATION not in self.display.get():
-		# 		operator, percentage = expressions[-2], expressions[-1]
-		# 		value_index = len(self.display.get()) - (len(percentage) + len(operator))
-		# 		value = self.display.get()[0:value_index]
-
-		# 		# If operator is * or /, divide percentage by 100
-		# 		if operator in ['×', '÷', '*', '/']:
-		# 			percentage = evaluate_expression(f'{percentage}/100')
-		# 		# If operator is + or -, calculate percentage of the value
-		# 		elif operator in ['+', '–', '-']:
-		# 			percentage = evaluate_expression(f'{value}*({percentage}/100)')
-
-		# 		# Rebuild the expression with the updated percentage
-		# 		display_expression = ''.join(value + operator + percentage)
-
-		# 	# Case 3: Multiple parts but there is a scientific notation
-		# 	elif len(expressions) > 1 and SCIENTIFIC_NOTATION in self.display.get():
-		# 		print('YAWA')
-		# else:
-		# 	# Leave the display unchanged
-		# 	display_expression = self.display.get()
-
-		# # print(f'display expression: {display_expression}')
-		# # Update display with the calculated percentage result
-		# self.display.configure(state='normal')
-		# self.display.delete(0, 'end')
-		# self.display.insert(0, display_expression)
-		# self.display.configure(state='readonly')
+						if operation_identifier in ['×', '÷', '*', '/']:
+							base_result = evaluate_expression(''.join(expressions[:-2]))
+							percentage_value = evaluate_expression(f'{percentage_value}/100')
+							base = [str(base_result), operation_identifier]
 
 
+						if operation_identifier in ['+', '–', '-']:
+							base_result = evaluate_expression(''.join(expressions[:-2]))
+							percentage = evaluate_expression(f'{percentage_value}/100')
+							percentage_value = evaluate_expression(f'{base_result}*{percentage}')
+
+						new_display = ''.join(base) + str(percentage_value)
+
+						if ERROR not in new_display:
+							# print(f'[DISPLAY] -> {new_display}')
+							self.display.configure(state='normal')
+							self.display.delete(0, 'end')
+							self.display.insert(0, new_display)
+							self.display.configure(state='readonly')
 
 
 if __name__ == '__main__':
-	app = CalculatorApp()
+	app = Calculator()
 	app.mainloop()
