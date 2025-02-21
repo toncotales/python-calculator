@@ -151,7 +151,7 @@ class WidgetFrame(tk.Frame):
 				self.display.insert('end', '.')
 				self.display.configure(state='readonly')
 
-			elif not expressions[-1]:
+			if not expressions[-1]:
 				self.display.configure(state='normal')
 				self.display.insert('end', '0.')
 				self.display.configure(state='readonly')
@@ -161,7 +161,7 @@ class WidgetFrame(tk.Frame):
 		if self.display.get() not in [ERROR, INITIAL_VALUE]:
 			if SCIENTIFIC_NOTATION not in self.display.get():
 				expressions = split_expression(self.display.get())
-				print(f'Values: {expressions}')
+				# print(f'Values: {expressions}')
 
 				if len(expressions) == 1:
 					if expressions[0].isdigit() or not expressions[0].endswith('.'):
@@ -172,9 +172,54 @@ class WidgetFrame(tk.Frame):
 						self.display.delete(0, 'end')
 						self.display.insert(0, test_result)
 						self.display.configure(state='readonly')
+
+				else:
+					print('Multiple items on the expression')
+					if expressions[-1]:
+						if expressions[-1].isdigit() or not expressions[-1].endswith('.'):
+							print(f'[OK] -> {expressions}')
+							base = expressions[:-1]
+							operation_identifier = expressions[-2]
+							percentage_value = expressions[-1]
+
+							if operation_identifier in ['×', '÷', '*', '/']:
+								base_result = evaluate_expression(''.join(expressions[:-2]))
+								percentage_value = evaluate_expression(f'{percentage_value}/100')
+								base = [str(base_result), operation_identifier]
+
+
+							if operation_identifier in ['+', '–', '-']:
+								base_result = evaluate_expression(''.join(expressions[:-2]))
+								print(f'base result: {base_result}')
+								percentage = evaluate_expression(f'{percentage_value}/100')
+								print(f'percentage: {percentage}')
+								percentage_value = evaluate_expression(f'{base_result}*{percentage}')
+
+
+							new_display = ''.join(base) + str(percentage_value)
+							print(f'[DISPLAY] -> {new_display}')
+
+							self.display.configure(state='normal')
+							self.display.delete(0, 'end')
+							self.display.insert(0, new_display)
+							self.display.configure(state='readonly')
+					
+
+
+
 			else:
 				print('Ooops... scientific notation found!')
 				print(f'{self.display.get()}')
+				expressions = split_expression_with_exponents(self.display.get())
+				print(expressions)
+
+				if len(expressions) == 1:
+					test_result = evaluate_expression(f'{expressions[0]}/100')
+
+					self.display.configure(state='normal')
+					self.display.delete(0, 'end')
+					self.display.insert(0, test_result)
+					self.display.configure(state='readonly')
 		
 		# """Handle percentage insert operations to the display."""
 		# # Process only if display is not 'Error' or '0'

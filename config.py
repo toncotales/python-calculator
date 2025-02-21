@@ -43,6 +43,26 @@ OPERATORS = "+–×÷-*/"
 OPERATOR_MAP = dict(zip("+–×÷", "+-*/"))
 
 
+def split_expression_with_exponents(expression):
+    groups = []
+    group = ''
+    for i in expression:
+        if i in '+-*/':
+            if group:
+                if group[-1].casefold() in 'eE':
+                    group += i
+                else:
+                    groups.append(group)
+                    groups.append(i)
+                    group = ''
+        else:
+            group += i
+    if group:
+        groups.append(group)
+        group = ''
+
+    return groups
+
 def split_expression(expression):
 	return re.split(r'([+–×÷\-/*])', expression)
 
