@@ -31,25 +31,27 @@ class Calculator(tk.Tk):
 		self.destroy()
 
 
-
 class WidgetFrame(tk.Frame):
 	def __init__(self, master=None, **kwargs):
 		super().__init__(master, **kwargs)
 
 		# Top frame containing the display of the calculator.
-		top_container = tk.Frame(self)
+		top_container = tk.Frame(self, bd=5, bg=FRAME_BORDER_COLOR)
 		top_container.place(relx=0.04, rely=0.05, relwidth=0.92, relheight=0.2)
 
 		# Bottom frame containing the buttons of the calculator.
-		bottom_container = tk.Frame(self, relief='flat', bd=10)
+		bottom_container = tk.Frame(self, relief='flat', bd=5, bg=FRAME_BORDER_COLOR)
 		bottom_container.place(relx=0.04, rely=0.29, relwidth=0.92, relheight=0.67)
 
 		# Configure bottom frame for a grid layout.
 		bottom_container.rowconfigure(tuple(range(5)), weight=1, uniform='a')
 		bottom_container.columnconfigure(tuple(range(4)), weight=1, uniform='a')
 
-		# Create the display with a tk.Entry widget.
-		self.display = tk.Entry(top_container, relief='flat', justify='right', bd=10, font=DISPLAY_FONT, fg=DISPLAY_FOREGROUND_COLOR)
+		# Create the display with a tk.Entry inside a tk.Frame widget.
+		border_frame = tk.Frame(top_container, relief='groove', bd=1)
+		border_frame.place(relwidth=1, relheight=1)
+
+		self.display = tk.Entry(border_frame, relief='flat', justify='right', bd=10, font=DISPLAY_FONT, fg=DISPLAY_FOREGROUND_COLOR)
 		self.display.place(x=0, y=0, relwidth=1, relheight=1)
 		
 		# Set initial display value to '0' and configure entry widget to be readonly,
@@ -221,5 +223,6 @@ class WidgetFrame(tk.Frame):
 
 
 if __name__ == '__main__':
+
 	app = Calculator()
 	app.open()
