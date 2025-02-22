@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import PhotoImage
-
 from config import *
+
 
 
 class Calculator(tk.Tk):
@@ -16,11 +16,20 @@ class Calculator(tk.Tk):
 		self.iconphoto(False, PhotoImage(data=WINDOW_ICON))
 
 		# Create the main frame for the calculator widgets.
-		self.widget_frame = WidgetFrame(self, bg=WINDOW_BACKGROUND_COLOR)
-		self.widget_frame.place(x=0, y=0, relwidth=1, relheight=1)
+		self.calc = WidgetFrame(self, bg=WINDOW_BACKGROUND_COLOR)
+		self.calc.place(x=0, y=0, relwidth=1, relheight=1)
 
 		# Bind the keypress event to the window.
-		self.bind('<KeyPress>', lambda event: self.widget_frame.process_input(event.char))
+		self.bind('<KeyPress>', lambda event: self.calc.process_insert(event.char))
+
+	def open(self):
+		"""Start the GUI event loop."""
+		self.mainloop()
+
+	def close(self):
+		"""Close the calculator window."""
+		self.destroy()
+
 
 
 class WidgetFrame(tk.Frame):
@@ -32,7 +41,7 @@ class WidgetFrame(tk.Frame):
 		top_container.place(relx=0.04, rely=0.05, relwidth=0.92, relheight=0.2)
 
 		# Bottom frame containing the buttons of the calculator.
-		bottom_container = tk.Frame(self)
+		bottom_container = tk.Frame(self, relief='flat', bd=10)
 		bottom_container.place(relx=0.04, rely=0.29, relwidth=0.92, relheight=0.67)
 
 		# Configure bottom frame for a grid layout.
@@ -143,12 +152,9 @@ class WidgetFrame(tk.Frame):
 	def insert_decimal(self):
 		# Inserting a decimal point in the display
 		if SCIENTIFIC_NOTATION not in self.display.get():
-			# Split the numbers and operators.
 			expressions = split_expression(self.display.get())
 		else:
 			expressions = split_expression_with_exponents(self.display.get())
-
-		# print(expressions)
 
 		if expressions[-1].isdigit():
 			self.display.configure(state='normal')
@@ -159,7 +165,6 @@ class WidgetFrame(tk.Frame):
 			self.display.configure(state='normal')
 			self.display.insert('end', '0.')
 			self.display.configure(state='readonly')
-
 
 	def percentage_handler(self):
 		# Handle the percentage functionality
@@ -217,4 +222,4 @@ class WidgetFrame(tk.Frame):
 
 if __name__ == '__main__':
 	app = Calculator()
-	app.mainloop()
+	app.open()

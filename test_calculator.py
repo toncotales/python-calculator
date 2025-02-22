@@ -1,65 +1,79 @@
 import unittest
+from config import evaluate_expression, ERROR
 from calculator import Calculator
 
 
 class TestCalculator(unittest.TestCase):
+    def test_basic_operations(self):
+        self.assertEqual(evaluate_expression("2+2"), 4)
+        self.assertEqual(evaluate_expression("10-3"), 7)
+        self.assertEqual(evaluate_expression("4*5"), 20)
+        self.assertEqual(evaluate_expression("20/4"), 5)
 
-    # TODO: Need to remake this unittest file
-    pass
+    def test_complex_operations(self):
+        self.assertEqual(evaluate_expression("3+5*2"), 13)
+        self.assertEqual(evaluate_expression("2+3*4"), 14)
+        self.assertEqual(evaluate_expression("10/2+3"), 8)
 
-    # def test_evaluate_expression_valid(self):
-    #     """Test that the evaluate_expression function works correctly."""
-    #     calc = Calculator()
-    #     value = "2×3"
-    #     result = calc.widget_frame.evaluate_expression(value)
-    #     self.assertEqual(result, "6")
-    #     calc.destroy()
+    def test_division_by_zero(self):
+        self.assertEqual(evaluate_expression("5/0"), ERROR)
 
-    # def test_invalid_expressions(self):
-    #     """Test that invalid expressions return 'Error'."""
-    #     calc = Calculator()
-    #     values = ["2÷0", "Error", None, "1e"]
-    #     for value in values:
-    #         result = calc.widget_frame.evaluate_expression(value)
-    #         self.assertEqual(result, "Error")
-    #     calc.destroy()
+    def test_invalid_expression(self):
+        self.assertEqual(evaluate_expression("5+e+3"), ERROR)
+        self.assertEqual(evaluate_expression("abc+3"), ERROR)
+        self.assertEqual(evaluate_expression("2..3+1"), ERROR)
 
-    # def test_process_insert(self):
-    #     """Test the input process functionality for button clicks or keyboard presses."""
-    #     calc = Calculator()
-    #     values = ".2×.8"
-    #     result = "0.2×0.8"
-    #     for value in values:
-    #         calc.widget_frame.process_insert(value)
-    #     self.assertEqual(calc.widget_frame.display.get(), result)
-    #     calc.destroy()
+    def test_percentage(self):
+        self.assertEqual(evaluate_expression("50/100"), 0.5)
+        self.assertEqual(evaluate_expression("200*50/100"), 100)
 
-    # def test_invalid_inputs(self):
-    #     """Test the input functionality for invalid keyboard presses."""
-    #     calc = Calculator()
-    #     values = "abcdefghijklmnopqrstuvwxyz"
-    #     for value in values:
-    #         calc.widget_frame.process_insert(value) # Invalid input
-    #         self.assertEqual(calc.widget_frame.display.get(), "0")  # It should remain 0
-    #     calc.destroy()
-            
-    # def test_clear_display(self):
-    #     """Test the clear display functionality."""
-    #     calc = Calculator()
-    #     calc.widget_frame.process_insert("45678")  # Valid input numbers
-    #     calc.widget_frame.process_insert("\x1b")  # C or the ESC key press
-    #     self.assertEqual(calc.widget_frame.display.get(), "0")
-    #     calc.destroy()
+    def test_gui_button_clicks(self):
 
-    # def test_backspace_function(self):
-    #     """Test that backspace works as expected."""
-    #     calc = Calculator()
-    #     backspaces = ['←', '\x08']  # Either button click or the backspace key press
-    #     calc.widget_frame.process_insert("12")
-    #     for backspace in backspaces:
-    #         calc.widget_frame.process_insert(backspace)
-    #     self.assertEqual(calc.widget_frame.display.get(), "0")
-    #     calc.destroy()
-             
+        app = Calculator()
+
+        app.calc.display.configure(state='normal')
+        
+        app.calc.process_insert("1")
+        self.assertEqual(app.calc.display.get(), "1")
+        
+        app.calc.process_insert("+")
+        self.assertEqual(app.calc.display.get(), "1+")
+        
+        app.calc.process_insert("2")
+        self.assertEqual(app.calc.display.get(), "1+2")
+        
+        app.calc.equalsign_handler()
+        self.assertEqual(app.calc.display.get(), "3")
+        
+        app.calc.clear_display()
+        self.assertEqual(app.calc.display.get(), "0")
+
+        app.close()
+        
+    
+    def test_gui_keypresses(self):
+
+        app = Calculator()
+
+        app.calc.display.configure(state='normal')
+        
+        app.calc.process_insert("5")
+        app.calc.process_insert("*")
+        app.calc.process_insert("3")
+        
+        self.assertEqual(app.calc.display.get(), "5*3")
+        
+        app.calc.equalsign_handler()
+        self.assertEqual(app.calc.display.get(), "15")
+        
+        app.calc.process_insert("←")  # Simulate backspace
+        self.assertEqual(app.calc.display.get(), "1")
+        
+        app.calc.clear_display()
+        self.assertEqual(app.calc.display.get(), "0")
+
+        app.close()
+
+
 if __name__ == "__main__":
     unittest.main()
