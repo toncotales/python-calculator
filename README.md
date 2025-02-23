@@ -30,6 +30,9 @@ python calculator.py
 ## Usage
 Once the application is running, you can use the calculator either by clicking the on-screen buttons or by typing directly on your keyboard.
 
+## Demo
+<img src="/assets/demo.gif" width="320" height="320"/>
+
 ## Contributing
 Feel free to fork this repository, make improvements, or report issues. Contributions are welcome!
 
