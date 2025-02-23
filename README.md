@@ -27,6 +27,11 @@ cd python-calculator
 python calculator.py
 ```
 
+## Download and Install for Windows
+
+[Windows Installer Setup](installer/python_calculator_v2025.1.2.0_setup.exe)
+
+
 ## Usage
 Once the application is running, you can use the calculator either by clicking the on-screen buttons or by typing directly on your keyboard.
 
